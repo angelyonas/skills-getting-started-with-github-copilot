@@ -21,40 +21,56 @@ document.addEventListener("DOMContentLoaded", () => {
         const spotsLeft = details.max_participants - details.participants.length;
 
         // Crear lista de participantes
-        let participantsSection = "";
+        let participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+        const participantsTitle = document.createElement("strong");
+        participantsTitle.textContent = "Participants:";
+        participantsSection.appendChild(participantsTitle);
+
         if (details.participants.length > 0) {
-          participantsSection = `
-            <div class="participants-section">
-              <strong>Participants:</strong>
-              <ul class="participants-list">
-                ${details.participants
-                  .map(
-                    (email) =>
-                      `<li class="participant-item"><span class="participant-avatar">${email
-                        .charAt(0)
-                        .toUpperCase()}</span> ${email}</li>`
-                  )
-                  .join("")}
-              </ul>
-            </div>
-          `;
+          const participantsList = document.createElement("ul");
+          participantsList.className = "participants-list";
+
+          details.participants.forEach((email) => {
+            const participantItem = document.createElement("li");
+            participantItem.className = "participant-item";
+
+            const participantAvatar = document.createElement("span");
+            participantAvatar.className = "participant-avatar";
+            participantAvatar.textContent = email.charAt(0).toUpperCase();
+
+            const participantEmail = document.createTextNode(` ${email}`);
+
+            participantItem.appendChild(participantAvatar);
+            participantItem.appendChild(participantEmail);
+            participantsList.appendChild(participantItem);
+          });
+
+          participantsSection.appendChild(participantsList);
         } else {
-          participantsSection = `
-            <div class="participants-section">
-              <strong>Participants:</strong>
-              <p class="no-participants">No participants yet.</p>
-            </div>
-          `;
+          const noParticipantsMessage = document.createElement("p");
+          noParticipantsMessage.className = "no-participants";
+          noParticipantsMessage.textContent = "No participants yet.";
+          participantsSection.appendChild(noParticipantsMessage);
         }
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          ${participantsSection}
-        `;
+        const activityTitle = document.createElement("h4");
+        activityTitle.textContent = name;
+        activityCard.appendChild(activityTitle);
 
+        const activityDescription = document.createElement("p");
+        activityDescription.textContent = details.description;
+        activityCard.appendChild(activityDescription);
+
+        const activitySchedule = document.createElement("p");
+        activitySchedule.innerHTML = `<strong>Schedule:</strong> ${details.schedule}`;
+        activityCard.appendChild(activitySchedule);
+
+        const activityAvailability = document.createElement("p");
+        activityAvailability.innerHTML = `<strong>Availability:</strong> ${spotsLeft} spots left`;
+        activityCard.appendChild(activityAvailability);
+
+        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
